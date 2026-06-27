@@ -200,6 +200,14 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);font-size:13px
 .sim-gain-row.up{color:var(--green);}
 .sim-gain-row.down{color:var(--red);}
 .sim-meta{font-size:12px;color:var(--dim);}
+.sim-row{display:flex;gap:8px;align-items:center;margin-bottom:8px;}
+.sim-row .sim-field{margin-bottom:0;min-width:0;}
+.sim-row-remove{background:var(--s2);border:1px solid var(--border);color:var(--dim);width:34px;height:34px;border-radius:var(--r);cursor:pointer;font-size:13px;flex-shrink:0;transition:all .12s;}
+.sim-row-remove:hover{background:var(--rdim);color:var(--red);border-color:var(--red);}
+.sim-holding-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--s2);}
+.sim-holding-row:last-child{border-bottom:none;}
+.sim-holding-sym{font-family:var(--fd);font-weight:700;margin-right:8px;}
+.sim-holding-amt{font-size:11px;color:var(--dim);}
 .sim-fallback-note{font-size:11px;color:var(--yellow);margin-top:8px;}
 .sim-benchmark{margin-top:18px;padding-top:18px;border-top:1px dashed var(--border);text-align:left;}
 .sim-benchmark-row{display:flex;justify-content:space-between;align-items:center;font-size:13px;padding:6px 0;}
@@ -584,24 +592,19 @@ function animateCountUp(el,start,end,duration,prefix,decimals){
   requestAnimationFrame(tick);
 }
 
+let simRowCount=0;
 function loadSimulatorPage(){
   const el=document.getElementById('mainContent');
   el.innerHTML=`
     <div style="font-family:var(--fd);font-size:18px;font-weight:700;margin-bottom:4px">💰 What If? Investment Simulator</div>
-    <div class="sim-intro">See what an investment would be worth today, using real historical closing prices.</div>
+    <div class="sim-intro">See what one or more investments would be worth today, using real historical closing prices.</div>
     <div class="card">
-      <div class="sim-form-row">
+      <div class="section-label">Your picks</div>
+      <div id="simRows"></div>
+      <button class="btn btn-g btn-sm" onclick="addSimRow()" style="margin-top:6px">+ Add another stock</button>
+      <div class="sim-form-row" style="margin-top:16px">
         <div class="sim-field">
-          <label>Stock or ETF</label>
-          <input id="simTicker" type="text" placeholder="e.g. AAPL" autocomplete="off" value="AAPL"/>
-          <div class="dropdown" id="simTickerDropdown"></div>
-        </div>
-        <div class="sim-field">
-          <label>Investment amount</label>
-          <input id="simAmount" type="number" value="1000" min="1" step="50"/>
-        </div>
-        <div class="sim-field">
-          <label>Time period</label>
+          <label>Time period (applies to all picks)</label>
           <select id="simPeriod">
             <option value="1w">1 week ago</option>
             <option value="1m">1 month ago</option>
@@ -619,99 +622,187 @@ function loadSimulatorPage(){
       </div>
     </div>
     <div id="simResult"></div>`;
-  attachCompareAutocomplete('simTicker','simTickerDropdown');
+  simRowCount=0;
+  document.getElementById('simRows').innerHTML='';
+  addSimRow('AAPL',1000);
+  addSimRow('MSFT',500);
+}
+
+function addSimRow(presetTicker,presetAmount){
+  const rowsEl=document.getElementById('simRows');
+  if(rowsEl.children.length>=5){
+    alert('You can compare up to 5 stocks at once — this keeps each simulation within the free historical-data quota (Alpha Vantage allows 25 requests/day).');
+    return;
+  }
+  const idx=simRowCount++;
+  const row=document.createElement('div');
+  row.className='sim-row';
+  row.id='simRow_'+idx;
+  row.innerHTML=`
+    <div class="sim-field" style="position:relative">
+      <input id="simTicker_${idx}" type="text" placeholder="Ticker, e.g. AAPL" autocomplete="off" value="${presetTicker||''}"/>
+      <div class="dropdown" id="simTickerDropdown_${idx}"></div>
+    </div>
+    <div class="sim-field" style="max-width:130px">
+      <input id="simAmount_${idx}" type="number" placeholder="Amount $" min="1" step="50" value="${presetAmount||1000}"/>
+    </div>
+    <button class="sim-row-remove" onclick="removeSimRow(${idx})" title="Remove">✕</button>`;
+  rowsEl.appendChild(row);
+  attachCompareAutocomplete(`simTicker_${idx}`,`simTickerDropdown_${idx}`);
+}
+
+function removeSimRow(idx){
+  const rowsEl=document.getElementById('simRows');
+  if(rowsEl.children.length<=1)return;
+  const row=document.getElementById('simRow_'+idx);
+  if(row)row.remove();
 }
 
 async function runSimulation(){
-  const ticker=document.getElementById('simTicker').value.trim().toUpperCase();
-  const amount=parseFloat(document.getElementById('simAmount').value)||0;
+  const rowsEl=document.getElementById('simRows');
+  const rows=[...rowsEl.children];
+  const picks=rows.map(row=>{
+    const idx=row.id.replace('simRow_','');
+    const ticker=document.getElementById('simTicker_'+idx).value.trim().toUpperCase();
+    const amount=parseFloat(document.getElementById('simAmount_'+idx).value)||0;
+    return{ticker,amount};
+  }).filter(p=>p.ticker&&p.amount>0);
+
   const period=document.getElementById('simPeriod').value;
   const resEl=document.getElementById('simResult');
 
-  if(!ticker){resEl.innerHTML='<div class="empty">Enter a ticker to simulate.</div>';return;}
-  if(amount<=0){resEl.innerHTML='<div class="empty">Enter an investment amount greater than $0.</div>';return;}
+  if(!picks.length){resEl.innerHTML='<div class="empty">Enter at least one ticker and amount.</div>';return;}
   if(!AV_KEY){resEl.innerHTML=`<div class="empty">This needs your free Alpha Vantage key for historical prices.<br><button class="btn btn-p btn-sm" style="margin-top:10px" onclick="openSettings()">Open settings</button></div>`;return;}
 
-  resEl.innerHTML=`<div class="loading"><div class="spinner"></div>Running the numbers on ${ticker}…</div>`;
+  resEl.innerHTML=`<div class="loading"><div class="spinner"></div>Running the numbers on ${picks.map(p=>p.ticker).join(', ')}…</div>`;
 
-  const [history,spyHistory,liveQ]=await Promise.all([
-    getAVFullHistoryCached(ticker),
-    getAVFullHistoryCached('SPY'),
-    getLiveQuote(ticker)
+  const uniqueTickers=[...new Set(picks.map(p=>p.ticker))];
+  const histMap={};
+  const liveMap={};
+  await Promise.all([
+    ...uniqueTickers.map(async t=>{histMap[t]=await getAVFullHistoryCached(t);}),
+    ...uniqueTickers.map(async t=>{const q=await getLiveQuote(t);if(q&&q.c)liveMap[t]=q;}),
+    (async()=>{if(!histMap['SPY'])histMap['SPY']=await getAVFullHistoryCached('SPY');})()
   ]);
-
-  if(!history||!history.length){
-    resEl.innerHTML=`<div class="empty" style="color:var(--red)">Couldn't load historical data for ${ticker}. Check the ticker, or you may have hit Alpha Vantage's free daily request limit (25/day) — try again tomorrow if so.<br><button class="btn btn-g btn-sm" style="margin-top:10px" onclick="runSimulation()">Retry</button></div>`;
-    return;
-  }
 
   const targetDateObj=periodToDate(period);
   const targetDateStr=targetDateObj?targetDateObj.toISOString().split('T')[0]:null;
-  const thenPoint=findPriceOnOrBefore(history,targetDateStr);
-  const nowClose=history[history.length-1].close;
-  const priceNow=(liveQ&&liveQ.c)?liveQ.c:nowClose;
-  const priceThen=thenPoint.close;
 
-  const shares=amount/priceThen;
-  const valueNow=shares*priceNow;
-  const gain=valueNow-amount;
-  const gainPct=(gain/amount)*100;
-  const up=gain>=0;
+  const results=[];
+  let anyFallback=false;
+  let alignedStartDate=null;
+  for(const pick of picks){
+    const hist=histMap[pick.ticker];
+    if(!hist||!hist.length){results.push({...pick,error:true});continue;}
+    const thenPoint=findPriceOnOrBefore(hist,targetDateStr);
+    const nowClose=hist[hist.length-1].close;
+    const priceNow=(liveMap[pick.ticker]&&liveMap[pick.ticker].c)?liveMap[pick.ticker].c:nowClose;
+    const priceThen=thenPoint.close;
+    const shares=pick.amount/priceThen;
+    const valueNow=shares*priceNow;
+    const gain=valueNow-pick.amount;
+    const gainPct=(gain/pick.amount)*100;
+    const fallback=targetDateStr&&targetDateStr<hist[0].date;
+    if(fallback)anyFallback=true;
+    if(!alignedStartDate||thenPoint.date>alignedStartDate)alignedStartDate=thenPoint.date;
+    results.push({...pick,hist,thenPoint,priceNow,priceThen,shares,valueNow,gain,gainPct,fallback});
+  }
 
-  const fallbackNote = (targetDateStr && targetDateStr<history[0].date)
-    ? `<div class="sim-fallback-note">⚠️ Price history for ${ticker} only goes back to ${history[0].date} — using that as the start date instead.</div>` : '';
+  const validResults=results.filter(r=>!r.error);
+  if(!validResults.length){
+    resEl.innerHTML=`<div class="empty" style="color:var(--red)">Couldn't load historical data for any of those tickers. Check the symbols, or you may have hit Alpha Vantage's free daily limit (25/day).<br><button class="btn btn-g btn-sm" style="margin-top:10px" onclick="runSimulation()">Retry</button></div>`;
+    return;
+  }
+
+  const totalInvested=validResults.reduce((s,r)=>s+r.amount,0);
+  const totalValueNow=validResults.reduce((s,r)=>s+r.valueNow,0);
+  const totalGain=totalValueNow-totalInvested;
+  const totalGainPct=(totalGain/totalInvested)*100;
+  const up=totalGain>=0;
 
   let spyHtml='';
-  if(spyHistory&&spyHistory.length){
-    const spyThen=findPriceOnOrBefore(spyHistory,targetDateStr);
-    const spyNowClose=spyHistory[spyHistory.length-1].close;
-    const sharesSPY=amount/spyThen.close;
+  let spyHist=histMap['SPY'];
+  let spySeriesSetup=null;
+  if(spyHist&&spyHist.length){
+    const spyThen=findPriceOnOrBefore(spyHist,targetDateStr);
+    const spyNowClose=spyHist[spyHist.length-1].close;
+    const sharesSPY=totalInvested/spyThen.close;
     const valueNowSPY=sharesSPY*spyNowClose;
-    const gainSPY=valueNowSPY-amount;
-    const gainPctSPY=(gainSPY/amount)*100;
+    const gainSPY=valueNowSPY-totalInvested;
+    const gainPctSPY=(gainSPY/totalInvested)*100;
     const upSPY=gainSPY>=0;
     spyHtml=`<div class="sim-benchmark">
-      <div class="section-label">For comparison — same $${amount.toLocaleString()} in the S&P 500 (SPY)</div>
+      <div class="section-label">For comparison — same $${totalInvested.toLocaleString()} in the S&P 500 (SPY)</div>
       <div class="sim-benchmark-row">
         <span style="color:var(--muted)">Would be worth today</span>
         <span style="font-weight:600">$${valueNowSPY.toFixed(2)} <span style="color:${upSPY?'var(--green)':'var(--red)'}">(${upSPY?'+':''}${gainPctSPY.toFixed(1)}%)</span></span>
       </div>
       <div class="sim-benchmark-row">
-        <span style="color:var(--muted)">${ticker} ${up?'beat' :'trailed'} the market by</span>
-        <span style="font-weight:600;color:${(gainPct-gainPctSPY)>=0?'var(--green)':'var(--red)'}">${(gainPct-gainPctSPY)>=0?'+':''}${(gainPct-gainPctSPY).toFixed(1)} pts</span>
+        <span style="color:var(--muted)">Your picks ${(totalGainPct-gainPctSPY)>=0?'beat':'trailed'} the market by</span>
+        <span style="font-weight:600;color:${(totalGainPct-gainPctSPY)>=0?'var(--green)':'var(--red)'}">${(totalGainPct-gainPctSPY)>=0?'+':''}${(totalGainPct-gainPctSPY).toFixed(1)} pts</span>
       </div>
     </div>`;
+    spySeriesSetup={hist:spyHist,shares:sharesSPY};
   }
 
-  const startIdx=history.findIndex(p=>p.date===thenPoint.date);
-  const pathSlice=history.slice(startIdx>=0?startIdx:0);
-  const chartPoints=downsample(pathSlice,80);
-  const chartId='sim_'+Date.now();
+  const breakdownHtml=validResults.map(r=>{
+    const rup=r.gain>=0;
+    return`<div class="sim-holding-row">
+      <div><span class="sim-holding-sym">${r.ticker}</span><span class="sim-holding-amt">$${r.amount.toLocaleString()} invested</span></div>
+      <div style="text-align:right">
+        <div style="font-weight:600">$${r.valueNow.toFixed(2)}</div>
+        <div style="font-size:12px;color:${rup?'var(--green)':'var(--red)'}">${rup?'+':''}${r.gainPct.toFixed(1)}%</div>
+      </div>
+    </div>`;
+  }).join('');
+  const errorTickers=results.filter(r=>r.error).map(r=>r.ticker);
+  const errorNote=errorTickers.length?`<div class="sim-fallback-note">⚠️ Couldn't load data for: ${errorTickers.join(', ')} — excluded from totals.</div>`:'';
+  const fallbackNote=anyFallback?`<div class="sim-fallback-note">⚠️ One or more picks only have price history starting later than your selected period — using their earliest available date instead for those.</div>`:'';
 
-  const periodLabels={'1w':'1 week ago','1m':'1 month ago','3m':'3 months ago','6m':'6 months ago','ytd':'since the start of this year','1y':'1 year ago','3y':'3 years ago','5y':'5 years ago','10y':'10 years ago','max':`on ${history[0].date}`};
+  const timelineSource=(spyHist&&spyHist.length)?spyHist:validResults[0].hist;
+  const masterTimeline=downsample(timelineSource.filter(p=>p.date>=alignedStartDate),80);
+  const portfolioSeries=masterTimeline.map(point=>{
+    let total=0;
+    for(const r of validResults){
+      const p=findPriceOnOrBefore(r.hist,point.date);
+      total+=r.shares*(p?p.close:r.priceThen);
+    }
+    return total;
+  });
+  const spySeries=spySeriesSetup?masterTimeline.map(point=>{
+    const p=findPriceOnOrBefore(spySeriesSetup.hist,point.date);
+    return spySeriesSetup.shares*(p?p.close:0);
+  }):null;
+
+  const chartId='sim_'+Date.now();
+  const periodLabels={'1w':'1 week ago','1m':'1 month ago','3m':'3 months ago','6m':'6 months ago','ytd':'since the start of this year','1y':'1 year ago','3y':'3 years ago','5y':'5 years ago','10y':'10 years ago','max':'as far back as possible'};
 
   resEl.innerHTML=`
     <div class="sim-card">
-      <div class="sim-headline">Your $${amount.toLocaleString()} in ${ticker}, invested ${periodLabels[period]||''}, would be worth</div>
-      <div class="sim-big-value ${up?'up':'down'}" id="simBigVal">$${amount.toFixed(2)}</div>
-      <div class="sim-gain-row ${up?'up':'down'}">${up?'▲':'▼'} $${Math.abs(gain).toFixed(2)} (${up?'+':''}${gainPct.toFixed(1)}%)</div>
-      <div class="sim-meta">Bought ${shares.toFixed(3)} shares at $${priceThen.toFixed(2)} on ${thenPoint.date} · Now $${priceNow.toFixed(2)}</div>
-      ${fallbackNote}
+      <div class="sim-headline">Your $${totalInvested.toLocaleString()} across ${validResults.length} pick${validResults.length>1?'s':''}, invested ${periodLabels[period]||''}, would be worth</div>
+      <div class="sim-big-value ${up?'up':'down'}" id="simBigVal">$${totalInvested.toFixed(2)}</div>
+      <div class="sim-gain-row ${up?'up':'down'}">${up?'▲':'▼'} $${Math.abs(totalGain).toFixed(2)} (${up?'+':''}${totalGainPct.toFixed(1)}%)</div>
+      ${errorNote}${fallbackNote}
       ${spyHtml}
     </div>
     <div class="card">
-      <div class="card-title">📈 Price path over this period</div>
+      <div class="card-title">💼 Your holdings breakdown</div>
+      ${breakdownHtml}
+    </div>
+    <div class="card">
+      <div class="card-title">📈 Combined portfolio value over time${spySeries?' <span style="font-size:11px;color:var(--dim);font-weight:400">— dashed line is the S&P 500</span>':''}</div>
       <div class="chart-wrap"><canvas id="${chartId}"></canvas></div>
     </div>
-    <div class="disclaimer">⚠️ Based on real historical closing prices (Alpha Vantage) and the live quote (Finnhub). Past performance does not predict future results — this is an educational tool, not investment advice.</div>`;
+    <div class="disclaimer">⚠️ Based on real historical closing prices (Alpha Vantage) and live quotes (Finnhub). Past performance does not predict future results — this is an educational tool, not investment advice.</div>`;
 
-  const bigValEl=document.getElementById('simBigVal');
-  animateCountUp(bigValEl,amount,valueNow,900,'$',2);
+  animateCountUp(document.getElementById('simBigVal'),totalInvested,totalValueNow,900,'$',2);
 
   setTimeout(()=>{
     const ctx=document.getElementById(chartId);
     if(!ctx)return;
-    new Chart(ctx,{type:'line',data:{labels:chartPoints.map(p=>p.date.slice(5)),datasets:[{data:chartPoints.map(p=>p.close),fill:true,borderColor:up?'#22c55e':'#ef4444',backgroundColor:up?'rgba(34,197,94,0.06)':'rgba(239,68,68,0.06)',borderWidth:2.5,pointRadius:0,tension:.25}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`$${Number(c.raw).toFixed(2)}`}}},scales:{x:{grid:{color:'rgba(128,128,128,0.08)'},ticks:{color:'#8c95a6',font:{size:10},maxTicksLimit:8}},y:{grid:{color:'rgba(128,128,128,0.08)'},ticks:{color:'#8c95a6',font:{size:10},callback:v=>`$${v}`}}}}});
+    const datasets=[{label:'Your picks',data:portfolioSeries,fill:true,borderColor:up?'#22c55e':'#ef4444',backgroundColor:up?'rgba(34,197,94,0.06)':'rgba(239,68,68,0.06)',borderWidth:2.5,pointRadius:0,tension:.25}];
+    if(spySeries)datasets.push({label:'S&P 500 (SPY)',data:spySeries,fill:false,borderColor:'#8c95a6',borderDash:[5,4],borderWidth:1.5,pointRadius:0,tension:.25});
+    new Chart(ctx,{type:'line',data:{labels:masterTimeline.map(p=>p.date.slice(5)),datasets},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,labels:{font:{size:11},color:'#8c95a6',boxWidth:14}},tooltip:{callbacks:{label:c=>`${c.dataset.label}: $${Number(c.raw).toFixed(2)}`}}},scales:{x:{grid:{color:'rgba(128,128,128,0.08)'},ticks:{color:'#8c95a6',font:{size:10},maxTicksLimit:8}},y:{grid:{color:'rgba(128,128,128,0.08)'},ticks:{color:'#8c95a6',font:{size:10},callback:v=>`$${v}`}}}}});
   },80);
 }
 
