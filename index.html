@@ -138,6 +138,10 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);font-size:13px
 .wl-add-row input{flex:1;padding:5px 8px;border:1px solid var(--border);border-radius:var(--r);font-size:12px;outline:none;background:var(--s2);color:var(--text);}
 .sb-section{margin-bottom:16px;}
 .sb-title{font-family:var(--fd);font-size:13px;font-weight:600;margin-bottom:8px;}
+.broker-btn{display:block;padding:9px 11px;border-radius:var(--r);border:1px solid var(--border);background:var(--s2);margin-bottom:6px;text-decoration:none;transition:all .12s;}
+.broker-btn:hover{border-color:var(--accent);background:var(--bdim);}
+.broker-name{display:block;font-family:var(--fd);font-size:13px;font-weight:600;color:var(--accent);}
+.broker-desc{display:block;font-size:11px;color:var(--muted);margin-top:2px;line-height:1.4;}
 ::-webkit-scrollbar{width:4px;height:4px;}
 ::-webkit-scrollbar-thumb{background:var(--s4);border-radius:4px;}
 .mover-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--s2);cursor:pointer;}
@@ -163,6 +167,61 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);font-size:13px
 .compare-inputs{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
 .compare-inputs input{flex:1;min-width:100px;padding:9px 12px;border:1px solid var(--border);border-radius:var(--r);background:var(--s2);color:var(--text);font-size:13px;outline:none;}
 .compare-inputs input:focus{border-color:var(--accent);}
+.compare-input-wrap{position:relative;flex:1;min-width:120px;}
+.compare-input-wrap input{width:100%;}
+.sector-dash{margin-bottom:22px;}
+.sector-dash-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;}
+.sector-dash-title{font-family:var(--fd);font-size:16px;font-weight:700;}
+.sector-dash-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;}
+.sector-tile{border-radius:var(--rl);padding:16px 12px;text-align:center;border:1.5px solid var(--border);transition:transform .15s,box-shadow .15s;cursor:pointer;}
+.sector-tile:hover{transform:translateY(-2px);box-shadow:0 4px 14px rgba(0,0,0,.08);}
+.sector-tile.up{background:linear-gradient(135deg,rgba(34,197,94,.13),rgba(34,197,94,.02));border-color:rgba(34,197,94,.45);}
+.sector-tile.down{background:linear-gradient(135deg,rgba(239,68,68,.13),rgba(239,68,68,.02));border-color:rgba(239,68,68,.45);}
+.sector-tile-name{font-size:11px;color:var(--muted);font-weight:600;margin-bottom:6px;white-space:nowrap;}
+.sector-tile-pct{font-family:var(--fd);font-size:28px;font-weight:700;line-height:1;}
+.sector-tile-pct.up{color:var(--green);}
+.sector-tile-pct.down{color:var(--red);}
+.sector-tile-sym{font-size:10px;color:var(--dim);margin-top:5px;}
+.sector-tile-skel{opacity:.4;}
+
+/* Investment Simulator */
+.sim-intro{font-size:13px;color:var(--muted);margin-bottom:16px;}
+.sim-form-row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;}
+.sim-field{flex:1;min-width:140px;position:relative;}
+.sim-field label{font-size:11px;color:var(--muted);display:block;margin-bottom:5px;font-weight:500;}
+.sim-field input,.sim-field select{width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:var(--r);background:var(--s2);color:var(--text);font-size:13px;outline:none;font-family:var(--fb);}
+.sim-field input:focus,.sim-field select:focus{border-color:var(--accent);}
+.sim-card{background:linear-gradient(135deg,var(--bdim),var(--surface));border:1.5px solid var(--accent);border-radius:var(--rl);padding:30px 24px;text-align:center;margin-bottom:16px;}
+.sim-headline{font-size:13px;color:var(--muted);margin-bottom:10px;}
+.sim-big-value{font-family:var(--fd);font-size:46px;font-weight:700;line-height:1;margin-bottom:10px;}
+.sim-big-value.up{color:var(--green);}
+.sim-big-value.down{color:var(--red);}
+.sim-gain-row{font-size:17px;font-weight:600;margin-bottom:12px;}
+.sim-gain-row.up{color:var(--green);}
+.sim-gain-row.down{color:var(--red);}
+.sim-meta{font-size:12px;color:var(--dim);}
+.sim-fallback-note{font-size:11px;color:var(--yellow);margin-top:8px;}
+.sim-benchmark{margin-top:18px;padding-top:18px;border-top:1px dashed var(--border);text-align:left;}
+.sim-benchmark-row{display:flex;justify-content:space-between;align-items:center;font-size:13px;padding:6px 0;}
+
+/* Mobile responsiveness */
+@media (max-width: 860px){
+  .app-layout{grid-template-columns:1fr;}
+  .sidebar-area{border-left:none;border-top:1px solid var(--border);}
+  .search-wrap{width:140px;}
+  .nav-links{overflow-x:auto;}
+  .home-grid{grid-template-columns:1fr 1fr;}
+  .sector-dash-grid{grid-template-columns:repeat(auto-fit,minmax(110px,1fr));}
+  .sim-form-row{flex-direction:column;align-items:stretch;}
+  .sim-field{min-width:0;}
+  .compare-inputs{flex-direction:column;}
+}
+@media (max-width: 480px){
+  .home-grid{grid-template-columns:1fr;}
+  .topbar{flex-wrap:wrap;height:auto;padding:10px 14px;}
+  .search-wrap{width:100%;order:3;margin-left:0;}
+  .sim-big-value{font-size:36px;}
+}
 </style>
 </head>
 <body>
@@ -196,6 +255,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);font-size:13px
     <button class="nl active" onclick="navTo('home',this)">Markets</button>
     <button class="nl" onclick="navTo('movers',this)">Movers</button>
     <button class="nl" onclick="navTo('compare',this)">Compare</button>
+    <button class="nl" onclick="navTo('simulator',this)">💰 Simulator</button>
     <button class="nl" onclick="navTo('portfolio',this)">Portfolio</button>
   </nav>
   <div class="search-wrap">
@@ -227,6 +287,22 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);font-size:13px
     <div class="sb-section">
       <div class="sb-title">🔔 Price Alerts</div>
       <div id="alertsEl"></div>
+    </div>
+    <div class="sb-section">
+      <div class="sb-title">💼 Recommended Brokers</div>
+      <a href="PASTE_TRENDSPIDER_LINK_HERE" target="_blank" rel="noopener" class="broker-btn">
+        <span class="broker-name">TrendSpider</span>
+        <span class="broker-desc">Advanced charting & automated technical analysis</span>
+      </a>
+      <a href="PASTE_IBKR_LINK_HERE" target="_blank" rel="noopener" class="broker-btn">
+        <span class="broker-name">Interactive Brokers</span>
+        <span class="broker-desc">Low-cost trading, 150+ global markets</span>
+      </a>
+      <a href="PASTE_M1_LINK_HERE" target="_blank" rel="noopener" class="broker-btn">
+        <span class="broker-name">M1 Finance</span>
+        <span class="broker-desc">Automated investing with custom "Pies"</span>
+      </a>
+      <div style="font-size:10px;color:var(--dim);margin-top:6px;line-height:1.5;">We may earn a commission if you sign up through these links, at no extra cost to you.</div>
     </div>
     <div style="padding:10px;background:var(--s2);border-radius:var(--r);font-size:11px;color:var(--dim);border:1px solid var(--border);">
       <div id="apiStatusEl">⚙️ <a href="#" onclick="openSettings();return false" style="color:var(--accent)">Connect live data →</a></div>
@@ -303,6 +379,44 @@ const STOCKS=[
   {t:'FTNT',n:'Fortinet Inc.',s:'Cybersecurity'},{t:'TXN',n:'Texas Instruments',s:'Semiconductors'},
   {t:'LRCX',n:'Lam Research',s:'Semiconductors'},{t:'TSM',n:'Taiwan Semiconductor',s:'Semiconductors'},
   {t:'MELI',n:'MercadoLibre Inc.',s:'LatAm E-commerce'},{t:'SE',n:'Sea Limited',s:'SE Asia Tech'},
+  {t:'TLT',n:'iShares 20+ Yr Treasury Bond',s:'Bonds & Treasury'},{t:'IEF',n:'iShares 7-10 Yr Treasury Bond',s:'Bonds & Treasury'},
+  {t:'SHY',n:'iShares 1-3 Yr Treasury Bond',s:'Bonds & Treasury'},{t:'GOVT',n:'iShares US Treasury Bond',s:'Bonds & Treasury'},
+  {t:'SGOV',n:'iShares 0-3 Month Treasury',s:'Bonds & Treasury'},{t:'BND',n:'Vanguard Total Bond Market',s:'Bonds & Treasury'},
+  {t:'AGG',n:'iShares Core US Aggregate Bond',s:'Bonds & Treasury'},{t:'MUB',n:'iShares National Muni Bond',s:'Bonds & Treasury'},
+  {t:'HYG',n:'iShares High Yield Corp Bond',s:'Bonds & Treasury'},{t:'LQD',n:'iShares Inv Grade Corp Bond',s:'Bonds & Treasury'},
+  {t:'TIP',n:'iShares TIPS Bond',s:'Bonds & Treasury'},
+  {t:'VOO',n:'Vanguard S&P 500 ETF',s:'Index Funds'},{t:'VTI',n:'Vanguard Total Stock Market',s:'Index Funds'},
+  {t:'VEA',n:'Vanguard FTSE Developed Mkts',s:'Index Funds'},{t:'VWO',n:'Vanguard FTSE Emerging Mkts',s:'Index Funds'},
+  {t:'SCHD',n:'Schwab US Dividend Equity',s:'Index Funds'},{t:'VYM',n:'Vanguard High Dividend Yield',s:'Index Funds'},
+  {t:'XLK',n:'Technology Select Sector',s:'Sector ETF'},{t:'XLF',n:'Financial Select Sector',s:'Sector ETF'},
+  {t:'XLV',n:'Health Care Select Sector',s:'Sector ETF'},{t:'XLE',n:'Energy Select Sector',s:'Sector ETF'},
+  {t:'XLY',n:'Consumer Discretionary Sector',s:'Sector ETF'},{t:'XLP',n:'Consumer Staples Sector',s:'Sector ETF'},
+  {t:'XLI',n:'Industrial Select Sector',s:'Sector ETF'},{t:'XLB',n:'Materials Select Sector',s:'Sector ETF'},
+  {t:'XLU',n:'Utilities Select Sector',s:'Sector ETF'},{t:'XLRE',n:'Real Estate Select Sector',s:'Sector ETF'},
+  {t:'XLC',n:'Communication Services Sector',s:'Sector ETF'},
+  {t:'SOXX',n:'iShares Semiconductor ETF',s:'Industry ETF'},{t:'XBI',n:'SPDR S&P Biotech ETF',s:'Industry ETF'},
+  {t:'KRE',n:'SPDR S&P Regional Banking',s:'Industry ETF'},{t:'XHB',n:'SPDR S&P Homebuilders',s:'Industry ETF'},
+  {t:'XOP',n:'SPDR S&P Oil & Gas E&P',s:'Industry ETF'},{t:'GDX',n:'VanEck Gold Miners ETF',s:'Industry ETF'},
+  {t:'ITA',n:'iShares Aerospace & Defense',s:'Industry ETF'},{t:'ICLN',n:'iShares Global Clean Energy',s:'Industry ETF'},
+  {t:'BOTZ',n:'Global X Robotics & AI ETF',s:'Industry ETF'},{t:'CIBR',n:'First Trust Cybersecurity ETF',s:'Industry ETF'},
+  {t:'IYT',n:'iShares Transportation Avg',s:'Industry ETF'},
+];
+
+// ═══════════════════════════════════
+// SECTOR DASHBOARD — real Sector SPDR ETFs (live data, not estimated)
+// ═══════════════════════════════════
+const SECTOR_ETFS=[
+  {sym:'XLK',name:'Technology'},{sym:'XLF',name:'Financials'},{sym:'XLV',name:'Health Care'},
+  {sym:'XLE',name:'Energy'},{sym:'XLY',name:'Consumer Disc.'},{sym:'XLP',name:'Consumer Staples'},
+  {sym:'XLI',name:'Industrials'},{sym:'XLB',name:'Materials'},{sym:'XLU',name:'Utilities'},
+  {sym:'XLRE',name:'Real Estate'},{sym:'XLC',name:'Communication'},
+];
+// More granular industries — same live-ETF approach, second dashboard row
+const INDUSTRY_ETFS=[
+  {sym:'SOXX',name:'Semiconductors'},{sym:'XBI',name:'Biotech'},{sym:'KRE',name:'Regional Banks'},
+  {sym:'XHB',name:'Homebuilders'},{sym:'XOP',name:'Oil & Gas Expl.'},{sym:'GDX',name:'Gold Miners'},
+  {sym:'ITA',name:'Aerospace & Defense'},{sym:'ICLN',name:'Clean Energy'},{sym:'BOTZ',name:'Robotics & AI'},
+  {sym:'CIBR',name:'Cybersecurity'},{sym:'IYT',name:'Transportation'},
 ];
 
 // ═══════════════════════════════════
@@ -362,6 +476,7 @@ function navTo(page,btn){
   if(page==='home')loadHomepage();
   else if(page==='movers')loadMovers();
   else if(page==='compare')loadComparePage();
+  else if(page==='simulator')loadSimulatorPage();
   else if(page==='portfolio')loadPortfolioPage();
 }
 
@@ -398,6 +513,206 @@ async function getAVChart(ticker){
     const dispKeys=allKeys.slice(-30);
     return{labels:dispKeys.map(k=>k.slice(5)),prices:dispKeys.map(k=>parseFloat(ts[k]['4. close'])),fullCloses};
   }catch{return null;}
+}
+
+// ═══════════════════════════════════
+// SIMULATOR — full historical data (cached per day, AV free tier is very limited)
+// ═══════════════════════════════════
+async function getAVFullHistory(ticker){
+  if(!AV_KEY)return null;
+  try{
+    const r=await fetch(`${AV_BASE}?function=TIME_SERIES_DAILY&symbol=${ticker}&apikey=${AV_KEY}&outputsize=full`);
+    const d=await r.json();
+    const ts=d['Time Series (Daily)'];
+    if(!ts)return null;
+    const allKeys=Object.keys(ts).sort();
+    return allKeys.map(k=>({date:k,close:parseFloat(ts[k]['4. close'])}));
+  }catch{return null;}
+}
+async function getAVFullHistoryCached(ticker){
+  const cacheKey='av_full_'+ticker;
+  try{
+    const cachedRaw=localStorage.getItem(cacheKey);
+    if(cachedRaw){
+      const cached=JSON.parse(cachedRaw);
+      if(cached.date===today()&&cached.data&&cached.data.length)return cached.data;
+    }
+  }catch{}
+  const data=await getAVFullHistory(ticker);
+  if(data&&data.length){
+    try{localStorage.setItem(cacheKey,JSON.stringify({date:today(),data}));}catch{}
+  }
+  return data;
+}
+function periodToDate(period){
+  const d=new Date();
+  if(period==='1w'){d.setDate(d.getDate()-7);return d;}
+  if(period==='1m'){d.setMonth(d.getMonth()-1);return d;}
+  if(period==='3m'){d.setMonth(d.getMonth()-3);return d;}
+  if(period==='6m'){d.setMonth(d.getMonth()-6);return d;}
+  if(period==='ytd'){return new Date(d.getFullYear(),0,1);}
+  if(period==='1y'){d.setFullYear(d.getFullYear()-1);return d;}
+  if(period==='3y'){d.setFullYear(d.getFullYear()-3);return d;}
+  if(period==='5y'){d.setFullYear(d.getFullYear()-5);return d;}
+  if(period==='10y'){d.setFullYear(d.getFullYear()-10);return d;}
+  return null; // 'max'
+}
+function findPriceOnOrBefore(history,targetDateStr){
+  if(!history||!history.length)return null;
+  if(!targetDateStr)return history[0];
+  if(targetDateStr<=history[0].date)return history[0];
+  let result=history[0];
+  for(const point of history){
+    if(point.date<=targetDateStr)result=point; else break;
+  }
+  return result;
+}
+function downsample(arr,maxPoints){
+  if(arr.length<=maxPoints)return arr;
+  const step=Math.ceil(arr.length/maxPoints);
+  return arr.filter((_,i)=>i%step===0);
+}
+function animateCountUp(el,start,end,duration,prefix,decimals){
+  const startTime=performance.now();
+  function tick(now){
+    const progress=Math.min((now-startTime)/duration,1);
+    const eased=1-Math.pow(1-progress,3);
+    const val=start+(end-start)*eased;
+    el.textContent=prefix+val.toLocaleString('en-US',{minimumFractionDigits:decimals,maximumFractionDigits:decimals});
+    if(progress<1)requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+
+function loadSimulatorPage(){
+  const el=document.getElementById('mainContent');
+  el.innerHTML=`
+    <div style="font-family:var(--fd);font-size:18px;font-weight:700;margin-bottom:4px">💰 What If? Investment Simulator</div>
+    <div class="sim-intro">See what an investment would be worth today, using real historical closing prices.</div>
+    <div class="card">
+      <div class="sim-form-row">
+        <div class="sim-field">
+          <label>Stock or ETF</label>
+          <input id="simTicker" type="text" placeholder="e.g. AAPL" autocomplete="off" value="AAPL"/>
+          <div class="dropdown" id="simTickerDropdown"></div>
+        </div>
+        <div class="sim-field">
+          <label>Investment amount</label>
+          <input id="simAmount" type="number" value="1000" min="1" step="50"/>
+        </div>
+        <div class="sim-field">
+          <label>Time period</label>
+          <select id="simPeriod">
+            <option value="1w">1 week ago</option>
+            <option value="1m">1 month ago</option>
+            <option value="3m">3 months ago</option>
+            <option value="6m">6 months ago</option>
+            <option value="ytd">Start of this year</option>
+            <option value="1y" selected>1 year ago</option>
+            <option value="3y">3 years ago</option>
+            <option value="5y">5 years ago</option>
+            <option value="10y">10 years ago</option>
+            <option value="max">As far back as possible</option>
+          </select>
+        </div>
+        <button class="btn btn-p" onclick="runSimulation()">Run simulation →</button>
+      </div>
+    </div>
+    <div id="simResult"></div>`;
+  attachCompareAutocomplete('simTicker','simTickerDropdown');
+}
+
+async function runSimulation(){
+  const ticker=document.getElementById('simTicker').value.trim().toUpperCase();
+  const amount=parseFloat(document.getElementById('simAmount').value)||0;
+  const period=document.getElementById('simPeriod').value;
+  const resEl=document.getElementById('simResult');
+
+  if(!ticker){resEl.innerHTML='<div class="empty">Enter a ticker to simulate.</div>';return;}
+  if(amount<=0){resEl.innerHTML='<div class="empty">Enter an investment amount greater than $0.</div>';return;}
+  if(!AV_KEY){resEl.innerHTML=`<div class="empty">This needs your free Alpha Vantage key for historical prices.<br><button class="btn btn-p btn-sm" style="margin-top:10px" onclick="openSettings()">Open settings</button></div>`;return;}
+
+  resEl.innerHTML=`<div class="loading"><div class="spinner"></div>Running the numbers on ${ticker}…</div>`;
+
+  const [history,spyHistory,liveQ]=await Promise.all([
+    getAVFullHistoryCached(ticker),
+    getAVFullHistoryCached('SPY'),
+    getLiveQuote(ticker)
+  ]);
+
+  if(!history||!history.length){
+    resEl.innerHTML=`<div class="empty" style="color:var(--red)">Couldn't load historical data for ${ticker}. Check the ticker, or you may have hit Alpha Vantage's free daily request limit (25/day) — try again tomorrow if so.<br><button class="btn btn-g btn-sm" style="margin-top:10px" onclick="runSimulation()">Retry</button></div>`;
+    return;
+  }
+
+  const targetDateObj=periodToDate(period);
+  const targetDateStr=targetDateObj?targetDateObj.toISOString().split('T')[0]:null;
+  const thenPoint=findPriceOnOrBefore(history,targetDateStr);
+  const nowClose=history[history.length-1].close;
+  const priceNow=(liveQ&&liveQ.c)?liveQ.c:nowClose;
+  const priceThen=thenPoint.close;
+
+  const shares=amount/priceThen;
+  const valueNow=shares*priceNow;
+  const gain=valueNow-amount;
+  const gainPct=(gain/amount)*100;
+  const up=gain>=0;
+
+  const fallbackNote = (targetDateStr && targetDateStr<history[0].date)
+    ? `<div class="sim-fallback-note">⚠️ Price history for ${ticker} only goes back to ${history[0].date} — using that as the start date instead.</div>` : '';
+
+  let spyHtml='';
+  if(spyHistory&&spyHistory.length){
+    const spyThen=findPriceOnOrBefore(spyHistory,targetDateStr);
+    const spyNowClose=spyHistory[spyHistory.length-1].close;
+    const sharesSPY=amount/spyThen.close;
+    const valueNowSPY=sharesSPY*spyNowClose;
+    const gainSPY=valueNowSPY-amount;
+    const gainPctSPY=(gainSPY/amount)*100;
+    const upSPY=gainSPY>=0;
+    spyHtml=`<div class="sim-benchmark">
+      <div class="section-label">For comparison — same $${amount.toLocaleString()} in the S&P 500 (SPY)</div>
+      <div class="sim-benchmark-row">
+        <span style="color:var(--muted)">Would be worth today</span>
+        <span style="font-weight:600">$${valueNowSPY.toFixed(2)} <span style="color:${upSPY?'var(--green)':'var(--red)'}">(${upSPY?'+':''}${gainPctSPY.toFixed(1)}%)</span></span>
+      </div>
+      <div class="sim-benchmark-row">
+        <span style="color:var(--muted)">${ticker} ${up?'beat' :'trailed'} the market by</span>
+        <span style="font-weight:600;color:${(gainPct-gainPctSPY)>=0?'var(--green)':'var(--red)'}">${(gainPct-gainPctSPY)>=0?'+':''}${(gainPct-gainPctSPY).toFixed(1)} pts</span>
+      </div>
+    </div>`;
+  }
+
+  const startIdx=history.findIndex(p=>p.date===thenPoint.date);
+  const pathSlice=history.slice(startIdx>=0?startIdx:0);
+  const chartPoints=downsample(pathSlice,80);
+  const chartId='sim_'+Date.now();
+
+  const periodLabels={'1w':'1 week ago','1m':'1 month ago','3m':'3 months ago','6m':'6 months ago','ytd':'since the start of this year','1y':'1 year ago','3y':'3 years ago','5y':'5 years ago','10y':'10 years ago','max':`on ${history[0].date}`};
+
+  resEl.innerHTML=`
+    <div class="sim-card">
+      <div class="sim-headline">Your $${amount.toLocaleString()} in ${ticker}, invested ${periodLabels[period]||''}, would be worth</div>
+      <div class="sim-big-value ${up?'up':'down'}" id="simBigVal">$${amount.toFixed(2)}</div>
+      <div class="sim-gain-row ${up?'up':'down'}">${up?'▲':'▼'} $${Math.abs(gain).toFixed(2)} (${up?'+':''}${gainPct.toFixed(1)}%)</div>
+      <div class="sim-meta">Bought ${shares.toFixed(3)} shares at $${priceThen.toFixed(2)} on ${thenPoint.date} · Now $${priceNow.toFixed(2)}</div>
+      ${fallbackNote}
+      ${spyHtml}
+    </div>
+    <div class="card">
+      <div class="card-title">📈 Price path over this period</div>
+      <div class="chart-wrap"><canvas id="${chartId}"></canvas></div>
+    </div>
+    <div class="disclaimer">⚠️ Based on real historical closing prices (Alpha Vantage) and the live quote (Finnhub). Past performance does not predict future results — this is an educational tool, not investment advice.</div>`;
+
+  const bigValEl=document.getElementById('simBigVal');
+  animateCountUp(bigValEl,amount,valueNow,900,'$',2);
+
+  setTimeout(()=>{
+    const ctx=document.getElementById(chartId);
+    if(!ctx)return;
+    new Chart(ctx,{type:'line',data:{labels:chartPoints.map(p=>p.date.slice(5)),datasets:[{data:chartPoints.map(p=>p.close),fill:true,borderColor:up?'#22c55e':'#ef4444',backgroundColor:up?'rgba(34,197,94,0.06)':'rgba(239,68,68,0.06)',borderWidth:2.5,pointRadius:0,tension:.25}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`$${Number(c.raw).toFixed(2)}`}}},scales:{x:{grid:{color:'rgba(128,128,128,0.08)'},ticks:{color:'#8c95a6',font:{size:10},maxTicksLimit:8}},y:{grid:{color:'rgba(128,128,128,0.08)'},ticks:{color:'#8c95a6',font:{size:10},callback:v=>`$${v}`}}}}});
+  },80);
 }
 
 // ═══════════════════════════════════
@@ -588,11 +903,58 @@ async function loadHomepage(){
 
   const topTickers=['NVDA','AAPL','TSLA','META','MSFT','AMZN'];
   let quotes={};
-  await Promise.all(topTickers.map(async t=>{const q=await getLiveQuote(t);if(q&&q.c)quotes[t]=q;}));
+  let sectorQuotes={};
+  let industryQuotes={};
+  await Promise.all([
+    ...topTickers.map(async t=>{const q=await getLiveQuote(t);if(q&&q.c)quotes[t]=q;}),
+    ...SECTOR_ETFS.map(async s=>{const q=await getLiveQuote(s.sym);if(q&&q.c)sectorQuotes[s.sym]=q;}),
+    ...INDUSTRY_ETFS.map(async s=>{const q=await getLiveQuote(s.sym);if(q&&q.c)industryQuotes[s.sym]=q;})
+  ]);
 
   const news=await getMarketNews();
 
   const find=t=>STOCKS.find(s=>s.t===t);
+
+  // Big sector performance dashboard — real data from Sector SPDR ETFs
+  const sectorData=SECTOR_ETFS.map(s=>({...s,q:sectorQuotes[s.sym]})).filter(s=>s.q&&typeof s.q.dp==='number');
+  sectorData.sort((a,b)=>b.q.dp-a.q.dp);
+  const sectorTiles=sectorData.map(s=>{
+    const up=s.q.dp>=0;
+    return`<div class="sector-tile ${up?'up':'down'}" onclick="selectStock('${s.sym}','${s.name} Sector ETF')">
+      <div class="sector-tile-name">${s.name}</div>
+      <div class="sector-tile-pct ${up?'up':'down'}">${fmtChg(s.q.dp)}</div>
+      <div class="sector-tile-sym">${s.sym} · ${fmtPrice(s.q.c)}</div>
+    </div>`;
+  }).join('');
+  const sectorDashHtml = sectorData.length ? `
+    <div class="sector-dash">
+      <div class="sector-dash-head">
+        <div class="sector-dash-title">📊 Sector Performance Today</div>
+        <span style="font-size:11px;color:var(--dim)"><span class="live-dot"></span>Live — based on Sector SPDR ETFs</span>
+      </div>
+      <div class="sector-dash-grid">${sectorTiles}</div>
+    </div>` : '';
+
+  // Second row — more granular industries
+  const industryData=INDUSTRY_ETFS.map(s=>({...s,q:industryQuotes[s.sym]})).filter(s=>s.q&&typeof s.q.dp==='number');
+  industryData.sort((a,b)=>b.q.dp-a.q.dp);
+  const industryTiles=industryData.map(s=>{
+    const up=s.q.dp>=0;
+    return`<div class="sector-tile ${up?'up':'down'}" onclick="selectStock('${s.sym}','${s.name} Industry ETF')">
+      <div class="sector-tile-name">${s.name}</div>
+      <div class="sector-tile-pct ${up?'up':'down'}">${fmtChg(s.q.dp)}</div>
+      <div class="sector-tile-sym">${s.sym} · ${fmtPrice(s.q.c)}</div>
+    </div>`;
+  }).join('');
+  const industryDashHtml = industryData.length ? `
+    <div class="sector-dash">
+      <div class="sector-dash-head">
+        <div class="sector-dash-title">🏭 Industry Spotlight</div>
+        <span style="font-size:11px;color:var(--dim)"><span class="live-dot"></span>Live — more granular than core sectors</span>
+      </div>
+      <div class="sector-dash-grid">${industryTiles}</div>
+    </div>` : '';
+
   const cards=topTickers.map(t=>{
     const q=quotes[t];
     const s=find(t);
@@ -626,10 +988,12 @@ async function loadHomepage(){
       </div>
       <button class="btn btn-g btn-sm" onclick="loadHomepage()">↻ Refresh</button>
     </div>
+    ${sectorDashHtml}
+    ${industryDashHtml}
     <div class="section-label">Top stocks — real-time prices</div>
     <div class="home-grid">${cards}</div>
     ${newsHtml?`<div class="section-label">Latest market news — real-time</div><div class="card">${newsHtml}</div>`:'<div class="empty">No news available right now</div>'}
-    <div class="disclaimer">⚠️ Real-time prices and news from Finnhub.io. This app shows raw market data only — it does not provide investment advice or recommendations. Always do your own research.</div>`;
+    <div class="disclaimer">⚠️ Real-time prices and news from Finnhub.io. Sector performance is calculated from real Sector SPDR ETF price changes, not estimates. This app shows raw market data only — it does not provide investment advice or recommendations. Always do your own research.</div>`;
 }
 
 // ═══════════════════════════════════
@@ -812,14 +1176,42 @@ function loadComparePage(){
   const el=document.getElementById('mainContent');
   el.innerHTML=`
     <div style="font-family:var(--fd);font-size:18px;font-weight:700;margin-bottom:4px">Compare Stocks</div>
-    <div style="font-size:13px;color:var(--muted);margin-bottom:14px">Enter 2–3 tickers to compare live, side by side.</div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:14px">Search or type 2–3 tickers to compare live, side by side.</div>
     <div class="compare-inputs">
-      <input id="cmp1" type="text" placeholder="Ticker 1, e.g. AAPL"/>
-      <input id="cmp2" type="text" placeholder="Ticker 2, e.g. MSFT"/>
-      <input id="cmp3" type="text" placeholder="Ticker 3 (optional)"/>
+      <div class="compare-input-wrap">
+        <input id="cmp1" type="text" placeholder="Search ticker or company…" autocomplete="off"/>
+        <div class="dropdown" id="cmp1Dropdown"></div>
+      </div>
+      <div class="compare-input-wrap">
+        <input id="cmp2" type="text" placeholder="Search ticker or company…" autocomplete="off"/>
+        <div class="dropdown" id="cmp2Dropdown"></div>
+      </div>
+      <div class="compare-input-wrap">
+        <input id="cmp3" type="text" placeholder="Search ticker or company… (optional)" autocomplete="off"/>
+        <div class="dropdown" id="cmp3Dropdown"></div>
+      </div>
       <button class="btn btn-p" onclick="runCompare()">Compare →</button>
     </div>
     <div id="compareResult"></div>`;
+  attachCompareAutocomplete('cmp1','cmp1Dropdown');
+  attachCompareAutocomplete('cmp2','cmp2Dropdown');
+  attachCompareAutocomplete('cmp3','cmp3Dropdown');
+}
+
+function attachCompareAutocomplete(inputId,dropdownId){
+  const input=document.getElementById(inputId);
+  const dropdown=document.getElementById(dropdownId);
+  if(!input||!dropdown)return;
+  input.addEventListener('input',()=>{
+    const q=input.value.trim().toLowerCase();
+    if(q.length<1){dropdown.classList.remove('open');return;}
+    const m=STOCKS.filter(s=>s.t.toLowerCase().startsWith(q)||s.n.toLowerCase().includes(q)||s.s.toLowerCase().includes(q)).slice(0,8);
+    if(!m.length){dropdown.classList.remove('open');return;}
+    dropdown.innerHTML=m.map(s=>`<div class="dd-item" onclick="document.getElementById('${inputId}').value='${s.t}';document.getElementById('${dropdownId}').classList.remove('open');"><span class="dd-sym">${s.t}</span><span class="dd-name">${s.n}</span><span class="dd-sec">${s.s}</span></div>`).join('');
+    dropdown.classList.add('open');
+  });
+  input.addEventListener('keydown',e=>{if(e.key==='Escape')dropdown.classList.remove('open');});
+  document.addEventListener('click',e=>{if(!e.target.closest('#'+inputId) && !e.target.closest('#'+dropdownId))dropdown.classList.remove('open');});
 }
 
 async function runCompare(){
